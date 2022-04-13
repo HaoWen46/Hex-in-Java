@@ -13,6 +13,7 @@ import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class App extends Application {
@@ -24,6 +25,8 @@ public class App extends Application {
     static String gridColor[][] = new String[BOARD_SIZE + 2][BOARD_SIZE + 3];
     static int round = 0;
     static int[] pos = new int[2];
+    static Polygon[][] keyBackground = new Polygon[BOARD_SIZE + 2][BOARD_SIZE + 3];
+
     public static void reinitialize(){
         buttons = new Button[BOARD_SIZE + 2][BOARD_SIZE + 3];
         gridColor = new String[BOARD_SIZE + 2][BOARD_SIZE + 3];
@@ -44,18 +47,19 @@ public class App extends Application {
             this.setShape(keyBackground);
         }
         private void onclick(int i, int j){
-            System.out.print(i);
-            System.out.print(j);
-            System.out.println("clicked");
+            String c = (round % 2 == 0)? "RED" : "BLUE";
+            System.out.printf("[%d, %d], clicked, %s\n", i, j, c);
             pos[0] = i;
             pos[1] = j;
             if (round%2==1) {
                 gridColor[i][j] = "blue";
+                keyBackground[i][j].setFill(Color.BLUE);
             }
             else{
                 gridColor[i][j] = "red";
+                keyBackground[i][j].setFill(Color.RED);
             }
-            draw();
+            round++;
         }
 
     }
@@ -72,13 +76,13 @@ public class App extends Application {
             }
             this.getPoints().addAll(points);
             //填色
-            if (newColor == "gray") {
+            if (Objects.equals(newColor, "gray")) {
                 this.setFill(Color.LIGHTGRAY);
             }
-            else if (newColor == "blue"){
+            else if (Objects.equals(newColor, "blue")){
                 this.setFill(Color.BLUE);
             }
-            else if (newColor == "red"){
+            else if (Objects.equals(newColor, "red")){
                 this.setFill(Color.RED);
             }
             else{
@@ -87,7 +91,6 @@ public class App extends Application {
         }
     }
     public void draw(){
-        round++;
         Group g = new Group();
         for(int i = 0; i < BOARD_SIZE + 2; i++){
             HBox hBox;
@@ -105,25 +108,24 @@ public class App extends Application {
                 else if(i==0||i==BOARD_SIZE+1){
                     gridColor[i][j] = "red";
                 }
-                Polygon keyBackground;
                 StackPane stack = new StackPane();
                 if (gridColor[i][j] == null){
-                    keyBackground = new Hexagon("gray");
-                    buttons[i][j] = new MyButton(i, j, keyBackground, "normalButton.css", true);
-                    stack.getChildren().addAll(keyBackground, buttons[i][j]);
+                    keyBackground[i][j] = new Hexagon("gray");
+                    buttons[i][j] = new MyButton(i, j, keyBackground[i][j], "normalButton.css", true);
+                    stack.getChildren().addAll(keyBackground[i][j], buttons[i][j]);
                 }
-                else if (gridColor[i][j] == "blue"){
-                    keyBackground = new Hexagon("blue");
-                    stack.getChildren().add(keyBackground);
+                else if (Objects.equals(gridColor[i][j], "blue")){
+                    keyBackground[i][j] = new Hexagon("blue");
+                    stack.getChildren().add(keyBackground[i][j]);
                 }
-                else if (gridColor[i][j] == "red"){
-                    keyBackground = new Hexagon("red");
-                    stack.getChildren().add(keyBackground);
+                else if (Objects.equals(gridColor[i][j], "red")){
+                    keyBackground[i][j] = new Hexagon("red");
+                    stack.getChildren().add(keyBackground[i][j]);
                 }
                 else{
-                    keyBackground = new Hexagon("white");
-                    buttons[i][j] = new MyButton(i, j, keyBackground, "transparentButton.css", false);
-                    stack.getChildren().addAll(keyBackground, buttons[i][j]);
+                    keyBackground[i][j] = new Hexagon("white");
+                    buttons[i][j] = new MyButton(i, j, keyBackground[i][j], "transparentButton.css", false);
+                    stack.getChildren().addAll(keyBackground[i][j], buttons[i][j]);
                 }
                 hBox.getChildren().add(stack);
             }
